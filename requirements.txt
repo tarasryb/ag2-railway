@@ -1,0 +1,2 @@
+ag2[openai,mcp]>=1,<2
+uvicorn[standard]>=0.30,<1
