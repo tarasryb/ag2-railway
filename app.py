@@ -8,8 +8,8 @@ load_dotenv()
 
 MODEL   = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 API_KEY = os.environ["OPENAI_API_KEY"]      # KeyError раніше, ніж LLM-помилка
-HOST    = os.getenv("MCP_HOST", "127.0.0.1")
-PORT    = int(os.getenv("MCP_PORT", "8000"))
+HOST    = os.getenv("HOST", "127.0.0.1")
+PORT    = int(os.getenv("PORT", "8000"))
 PATH    = os.getenv("MCP_PATH", "/mcp")
 
 # ── AG2 agent ─────────────────────────────────────────────────────────────
@@ -49,6 +49,6 @@ def ask_ag2(question: str) -> str:
     return str(reply)
 
 if __name__ == "__main__":
-    host = os.getenv("MCP_HOST", HOST)
-    port = int(os.getenv("MCP_PORT", str(PORT)))
+    host = os.getenv("HOST", HOST)
+    port = int(os.getenv("PORT", str(PORT)))
     app.run(transport="http", host=host, port=port, path=PATH)
