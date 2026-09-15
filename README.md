@@ -34,8 +34,8 @@ Create `.env` in the project root:
 ```env
 OPENAI_API_KEY=replace-me
 OPENAI_MODEL=gpt-4o-mini
-MCP_HOST=127.0.0.1
-MCP_PORT=8080
+HOST=127.0.0.1
+PORT=8080
 MCP_PATH=/mcp
 ```
 

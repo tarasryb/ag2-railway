@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 COPY app.py .
 
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT}"]
+CMD ["sh", "-c", "HOST=0.0.0.0 PORT=${PORT} python app.py"]
