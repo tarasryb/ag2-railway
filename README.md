@@ -106,3 +106,7 @@ docker run --rm -p 8080:8000 \
 
 # Sample request
 #ask_ag2 Can you explain the Waterfall Model of SDLC?
+
+## Smoke test
+Say "SDLC MCP server is alive" and list the SWEBOK knowledge areas
+you cover in one line.
