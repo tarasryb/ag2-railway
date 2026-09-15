@@ -1,0 +1,16 @@
+[project]
+name = "ag2-sdlc-mcp"
+version = "0.1.0"
+description = "AG2 v1 multi-agent SDLC workflow exposed as an MCP server"
+requires-python = ">=3.10"
+dependencies = [
+    "ag2[openai]>=1.0,<2.0",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+ag2-sdlc-mcp = "ag2_sdlc_mcp.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

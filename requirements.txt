@@ -1,2 +1,45 @@
-ag2[openai,mcp]>=1,<2
-uvicorn[standard]>=0.30,<1
+# ── Core framework ────────────────────────────────────────────────────────
+# AG2 (formerly AutoGen) — multi-agent orchestration framework.
+# The PyPI distribution is `ag2`; the importable module is `autogen`.
+ag2[openai]>=0.9.9,<1.0
+
+# ── MCP (Model Context Protocol) ──────────────────────────────────────────
+# FastMCP: high-level server SDK used to expose agents as MCP tools.
+fastmcp>=2.3.0,<3.0
+# Reference MCP SDK (transport primitives, schemas).
+mcp>=1.2.0,<2.0
+
+# ── LLM provider SDK ──────────────────────────────────────────────────────
+openai>=1.40.0,<2.0
+
+# ── ASGI runtime for the /mcp HTTP transport ──────────────────────────────
+uvicorn[standard]>=0.30.0,<1.0
+starlette>=0.37.0,<1.0
+httpx>=0.27.0,<1.0
+
+# ── Config, validation, artifact store ────────────────────────────────────
+pydantic>=2.7.0,<3.0
+pydantic-settings>=2.3.0,<3.0
+python-dotenv>=1.0.1,<2.0
+
+# ── Structured logging & observability (optional but recommended) ─────────
+structlog>=24.1.0,<25.0
+
+# ── Dev / test (move to requirements-dev.txt if you prefer) ───────────────
+pytest>=8.2.0,<9.0
+pytest-asyncio>=0.23.0,<1.0
+
+# Additional LLM providers
+# ag2[anthropic]>=0.9.9,<1.0
+# ag2[gemini]>=0.9.9,<1.0
+
+# RAG / knowledge base for the SDLC agents
+# ag2[retrievechat]>=0.9.9,<1.0
+
+# Git / code artifact tooling for the Developer & DevOps agents
+# GitPython>=3.1.43,<4.0
+
+# OpenAPI validation for C-DAD contracts published by the Architect
+# openapi-spec-validator>=0.7.1,<1.0
+# jsonschema>=4.22.0,<5.0
+
