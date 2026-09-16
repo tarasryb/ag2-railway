@@ -16,6 +16,7 @@ openai>=1.40.0,<2.0
 uvicorn[standard]>=0.30.0,<1.0
 starlette>=0.37.0,<1.0
 httpx>=0.27.0,<1.0
+authlib<2.0.0
 
 # ── Config, validation, artifact store ────────────────────────────────────
 pydantic>=2.7.0,<3.0

@@ -105,8 +105,26 @@ docker run --rm -p 8080:8000 \
 - `Dockerfile` - container build definition
 
 # Sample request
+```
 #ask_ag2 Can you explain the Waterfall Model of SDLC?
+```
 
 ## Smoke test
+```
+#ask_ag2
 Say "SDLC MCP server is alive" and list the SWEBOK knowledge areas
 you cover in one line.
+```
+
+## Requirements Analyst
+```
+#ask_ag2
+Business brief:
+
+We need a URL shortener service for internal engineering teams.
+Users paste long URLs and get short aliases they can share in
+Slack. Expected load: ~500 shortenings/day, ~50k redirects/day.
+Must not lose data. No public access — SSO only.
+
+Please produce an SRS.
+```
