@@ -1,6 +1,11 @@
 # workflow/sdlc_team.py
-from ag2 import GroupChat, GroupChatManager
-from ag2.config import OpenAIConfig
+try:
+    from ag2 import GroupChat, GroupChatManager  # type: ignore
+    from ag2.config import OpenAIConfig  # type: ignore
+except ImportError:
+    from autogen import GroupChat, GroupChatManager
+
+    OpenAIConfig = None
 
 from agents import (
     requirements, architect, designer, developer,
@@ -11,6 +16,68 @@ from .artifacts import ArtifactStore
 
 DEFAULT_MAX_ROUNDS = 40
 DEFAULT_COMPLETION_TOKEN = "SDLC_COMPLETE"
+
+
+def _message_content(message: object) -> str:
+    if isinstance(message, dict):
+        return str(message.get("content") or "")
+    return str(getattr(message, "content", "") or "")
+
+
+def _build_group_chat(agents, handoffs, store, max_rounds: int, completion_token: str):
+    try:
+        # Newer AG2 API
+        return GroupChat(
+            agents=agents,
+            handoffs=handoffs,
+            shared_state={"artifacts": store},
+            max_rounds=max_rounds,
+            termination=lambda msg: completion_token in _message_content(msg),
+        )
+    except TypeError:
+        # Legacy autogen API
+        by_name = {agent.name: agent for agent in agents}
+        allowed_transitions = {
+            by_name[source]: [by_name[target] for target in targets]
+            for source, targets in handoffs.items()
+        }
+        chat = GroupChat(
+            agents=agents,
+            messages=[],
+            max_round=max_rounds,
+            allowed_or_disallowed_speaker_transitions=allowed_transitions,
+            speaker_transitions_type="allowed",
+            speaker_selection_method="auto",
+        )
+        setattr(chat, "shared_state", {"artifacts": store})
+        setattr(chat, "termination", lambda msg: completion_token in _message_content(msg))
+        return chat
+
+
+def _build_manager(chat, model: str, system_prompt: str):
+    if OpenAIConfig is not None:
+        try:
+            return GroupChatManager(
+                chat,
+                config=OpenAIConfig(model=model),
+                system_prompt=system_prompt,
+            )
+        except TypeError:
+            pass
+
+    llm_config = {"config_list": [{"model": model}]}
+    try:
+        return GroupChatManager(
+            groupchat=chat,
+            llm_config=llm_config,
+            system_message=system_prompt,
+        )
+    except TypeError:
+        return GroupChatManager(
+            chat,
+            llm_config=llm_config,
+            system_message=system_prompt,
+        )
 
 
 def build_sdlc_team(
@@ -92,23 +159,21 @@ def build_sdlc_team(
                 f"Unknown handoff targets for {source}: {', '.join(missing_targets)}"
             )
 
-    chat = GroupChat(
-        agents=agents,
-        handoffs=handoffs,
-        shared_state={"artifacts": store},
-        max_rounds=max_rounds,
-        termination=lambda msg: completion_token in (msg.content or ""),
+    system_prompt = (
+        "You coordinate an SDLC team of specialized AI agents. "
+        "Route each message to the next appropriate role based on the "
+        "handoff graph. Enforce: (1) V-model pairing - every "
+        "creator role is followed by its verifier; (2) contract-driven "
+        "governance - no lifecycle transition without human approval; "
+        "(3) full traceability REQ -> ADR -> SDD -> code -> test -> deploy."
     )
 
-    return GroupChatManager(
-        chat,
-        config=OpenAIConfig(model=model),
-        system_prompt=(
-            "You coordinate an SDLC team of specialized AI agents. "
-            "Route each message to the next appropriate role based on the "
-            "handoff graph. Enforce: (1) V-model pairing — every "
-            "creator role is followed by its verifier; (2) contract-driven "
-            "governance — no lifecycle transition without human approval; "
-            "(3) full traceability REQ → ADR → SDD → code → test → deploy."
-        ),
+    chat = _build_group_chat(
+        agents=agents,
+        handoffs=handoffs,
+        store=store,
+        max_rounds=max_rounds,
+        completion_token=completion_token,
     )
+
+    return _build_manager(chat=chat, model=model, system_prompt=system_prompt)
